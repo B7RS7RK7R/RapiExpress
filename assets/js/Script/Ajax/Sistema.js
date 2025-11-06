@@ -1087,12 +1087,11 @@ function recargarTablaSucursal() {
   recargarTablaGenerica('#sucursalesTable', 'index.php?c=sucursal&a=index', 'edit-sucursal-modal');
 }
 
-$('#formRegistrarSucursal').on('submit', function (e) {
+$(document).on('submit', '#formRegistrarSucursal', function (e) {
   e.preventDefault();
   const $form = $(this);
   const datos = new FormData(this);
-
-  $.ajax({
+$.ajax({
     url: $form.attr('action'),
     type: 'POST',
     data: datos,
@@ -1116,6 +1115,10 @@ $('#formRegistrarSucursal').on('submit', function (e) {
     }
   });
 });
+});
+
+
+  
 
 let datosOriginalesSucursal = {};
 
@@ -1549,4 +1552,10 @@ $(document).on('hidden.bs.modal', '#usuarioModal', function () {
   const $form = $('#formRegistrarUsuario');
   limpiarFormulario($form);
 });
+
+$('#formRegistrarSucursal').on('submit', function (e) {
+  e.preventDefault();
+  alert('Interceptado correctamente');
+});
+
 });
