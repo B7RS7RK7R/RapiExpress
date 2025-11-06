@@ -43,3 +43,26 @@
 [05-Nov-2025 23:35:57 Europe/Berlin] Total cargos obtenidos: 3
 [05-Nov-2025 23:35:57 Europe/Berlin] Total couriers obtenidos: 5
 [05-Nov-2025 23:35:57 Europe/Berlin] Mostrando vista dashboard admin
+[06-Nov-2025 03:34:31 Europe/Berlin] === Ejecutando dashboard_admin ===
+[06-Nov-2025 03:34:31 Europe/Berlin] Total usuarios obtenidos: 3
+[06-Nov-2025 03:34:31 Europe/Berlin] Total clientes obtenidos: 4
+[06-Nov-2025 03:34:31 Europe/Berlin] Total tiendas obtenidas: 4
+[06-Nov-2025 03:34:31 Europe/Berlin] Total cargos obtenidos: 3
+[06-Nov-2025 03:34:31 Europe/Berlin] Total couriers obtenidos: 5
+[06-Nov-2025 03:34:31 Europe/Berlin] Mostrando vista dashboard admin
+[06-Nov-2025 03:35:01 Europe/Berlin] === Ejecutando dashboard_admin ===
+[06-Nov-2025 03:35:01 Europe/Berlin] Total usuarios obtenidos: 3
+[06-Nov-2025 03:35:01 Europe/Berlin] Total clientes obtenidos: 4
+[06-Nov-2025 03:35:01 Europe/Berlin] Total tiendas obtenidas: 4
+[06-Nov-2025 03:35:01 Europe/Berlin] Total cargos obtenidos: 3
+[06-Nov-2025 03:35:01 Europe/Berlin] Total couriers obtenidos: 5
+[06-Nov-2025 03:35:01 Europe/Berlin] Mostrando vista dashboard admin
+[06-Nov-2025 03:35:14 Europe/Berlin] PHP Warning:  include(C:\xampp\htdocs\RapiExpress\src\views\usuario/../partels/navegacion.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\RapiExpress\src\views\usuario\perfil.php on line 135
+[06-Nov-2025 03:35:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\RapiExpress\src\views\usuario/../partels/navegacion.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\RapiExpress\src\views\usuario\perfil.php on line 135
+[06-Nov-2025 03:35:30 Europe/Berlin] === Ejecutando dashboard_admin ===
+[06-Nov-2025 03:35:30 Europe/Berlin] Total usuarios obtenidos: 3
+[06-Nov-2025 03:35:30 Europe/Berlin] Total clientes obtenidos: 4
+[06-Nov-2025 03:35:30 Europe/Berlin] Total tiendas obtenidas: 4
+[06-Nov-2025 03:35:30 Europe/Berlin] Total cargos obtenidos: 3
+[06-Nov-2025 03:35:30 Europe/Berlin] Total couriers obtenidos: 5
+[06-Nov-2025 03:35:30 Europe/Berlin] Mostrando vista dashboard admin
