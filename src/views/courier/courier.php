@@ -260,8 +260,8 @@ use RapiExpress\Helpers\Lang;
                     </div>
                 </div>
 
-<script src="assets/js/Script/Modulos/Courier/Courier_Ajax.js"></script>
-<script src="assets/js/Script/Modulos/Courier/Courier_AUX.js"></script>
+<script src="assets/js/script/sistema.js"></script>
+<script src="assets/js/script/validaciones/validarCourier.js"></script>
 
             </div>
         </div>

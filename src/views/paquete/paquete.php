@@ -384,8 +384,8 @@ $model = new Paquete();
         </div>
     </div>
 
-   <script src="assets\js\Script\Modulos\Paquetes\Paquetes_Ajax.js"></script>
-<script src="assets/js/Script/Modulos/Paquetes/Paquetes_AUX.js"></script>
+   <script src="assets/js/script/sistema.js"></script>
+<script src="assets/js/script/validaciones/validarPaquete.js"></script>
 
 </body>
 

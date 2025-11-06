@@ -304,10 +304,9 @@ use RapiExpress\Helpers\Lang;
 
    
 
-<script src="assets\js\Script\Modulos\Sucursales\Sucursales_Ajax.js"></script>
-<script src="assets/js/Script/Modulos/Sucursales/Sucursales_AUX.js"></script>
+<script src="RAPIEXPRESS/assets/js/Script/Ajax/Sistema.js"></script>
 
-
+<script src="assets/js/Script/Validaciones/validarSucursal.js"></script>
 
             </div>
         </div>

@@ -1,3 +1,6 @@
+$(document).ready(function() {
+  // tu código aquí
+
 // ─── CARGO ─────────────────────────────────────────────────────────────
 function recargarTablaCargo() {
   recargarTablaGenerica('#cargosTable', 'index.php?c=cargo&a=index', 'edit-cargo-modal');
@@ -1077,4 +1080,473 @@ $(document).on('hidden.bs.modal', '#imprimirSacaModal', function () {
   document.getElementById("detalleSacaCantidad").innerText = '-';
   document.getElementById("detalleSacaFecha").innerText = '-';
   document.getElementById("detalleSacaQR").innerHTML = '';
+});
+
+// ─── SUCURSAL ──────────────────────────────────────────────────────────
+function recargarTablaSucursal() {
+  recargarTablaGenerica('#sucursalesTable', 'index.php?c=sucursal&a=index', 'edit-sucursal-modal');
+}
+
+$('#formRegistrarSucursal').on('submit', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+  const datos = new FormData(this);
+
+  $.ajax({
+    url: $form.attr('action'),
+    type: 'POST',
+    data: datos,
+    contentType: false,
+    processData: false,
+    dataType: 'json',
+    success: function (res) {
+      $('#sucursalModal').modal('hide');
+      setTimeout(() => {
+        if (res.estado === 'success') {
+          limpiarFormulario($form);
+          Swal.fire({ icon: 'success', title: 'Éxito', text: res.mensaje, timer: 1500, showConfirmButton: false });
+          recargarTablaSucursal();
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: res.mensaje });
+        }
+      }, 300);
+    },
+    error: function () {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo registrar la sucursal.' });
+    }
+  });
+});
+
+let datosOriginalesSucursal = {};
+
+$(document).on('show.bs.modal', '.modal[id^="edit-sucursal-modal"]', function () {
+  const $form = $(this).find('form[id^="formEditarSucursal-"]');
+  datosOriginalesSucursal = {};
+  $form.find('input, select, textarea').each(function () {
+    const name = $(this).attr('name');
+    if (name) datosOriginalesSucursal[name] = $(this).val();
+  });
+});
+
+$(document).on('submit', 'form[id^="formEditarSucursal-"]', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+
+  let hayCambios = false;
+  $form.find('input, select, textarea').each(function () {
+    const name = $(this).attr('name');
+    if (name && datosOriginalesSucursal[name] !== $(this).val()) {
+      hayCambios = true;
+      return false;
+    }
+  });
+
+  if (!hayCambios) {
+    Swal.fire({ icon: 'info', title: 'Sin cambios', text: 'No se detectaron modificaciones en los datos.', timer: 2000, showConfirmButton: false });
+    return;
+  }
+
+  const datos = new FormData(this);
+  $.ajax({
+    url: $form.attr('action'),
+    type: 'POST',
+    data: datos,
+    contentType: false,
+    processData: false,
+    dataType: 'json',
+    success: function (res) {
+      $form.closest('.modal').modal('hide');
+      setTimeout(() => {
+        if (res.estado === 'success') {
+          Swal.fire({ icon: 'success', title: 'Actualizado', text: res.mensaje, timer: 1500, showConfirmButton: false });
+          recargarTablaSucursal();
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: res.mensaje });
+        }
+      }, 300);
+    },
+    error: function () {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar la sucursal.' });
+    }
+  });
+});
+
+$(document).on('hidden.bs.modal', '.modal[id^="edit-sucursal-modal"]', function () {
+  datosOriginalesSucursal = {};
+});
+
+$('#formEliminarSucursal').on('submit', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+
+  $.ajax({
+    url: $form.attr('action'),
+    type: 'POST',
+    data: $form.serialize(),
+    dataType: 'json',
+    success: function (res) {
+      $('#delete-sucursal-modal').modal('hide');
+      setTimeout(() => {
+        if (res.estado === 'success') {
+          Swal.fire({ icon: 'success', title: 'Eliminado', text: res.mensaje, timer: 1500, showConfirmButton: false });
+          recargarTablaSucursal();
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: res.mensaje });
+        }
+      }, 300);
+    },
+    error: function () {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se puede eliminar la sucursal porque está asociada a registros relacionados.' });
+    }
+  });
+});
+
+function setDeleteSucursalId(id) {
+  $('#delete_sucursal_id').val(id);
+}
+
+// ─── TIENDA ────────────────────────────────────────────────────────────
+function recargarTablaTienda() {
+  recargarTablaGenerica('#tiendasTable', 'index.php?c=tienda&a=index', 'edit-tienda-modal');
+}
+
+function setDeleteTiendaId(id) {
+  $('#delete_tienda_id').val(id);
+}
+
+$('#tiendaModal').on('hidden.bs.modal', function () {
+  const $form = $('#formRegistrarTienda');
+  $form[0].reset();
+  $form.find('input').removeClass('is-valid is-invalid');
+});
+
+$(document).on('show.bs.modal', '[id^="edit-tienda-modal-"]', function () {
+  const $form = $(this).find('form');
+  $form.data('original', $form.serialize());
+});
+
+$('#formRegistrarTienda').on('submit', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+
+  if (!validarFormularioTienda($form)) {
+    Swal.fire('Error', 'Corrige los campos inválidos', 'error');
+    return;
+  }
+
+  $.ajax({
+    url: 'index.php?c=tienda&a=registrar',
+    type: 'POST',
+    data: $form.serialize(),
+    dataType: 'json',
+    success: function (r) {
+      $('#tiendaModal').modal('hide');
+      Swal.fire({
+        icon: r.estado === 'success' ? 'success' : 'error',
+        title: r.estado === 'success' ? 'Éxito' : 'Error',
+        text: r.mensaje,
+        timer: r.estado === 'success' ? 1500 : 2500,
+        showConfirmButton: r.estado !== 'success'
+      });
+      if (r.estado === 'success') {
+        $form[0].reset();
+        $form.find('input').removeClass('is-valid is-invalid');
+        recargarTablaTienda();
+      }
+    },
+    error: function () {
+      Swal.fire('Error', 'No se pudo registrar la tienda.', 'error');
+    }
+  });
+});
+
+$(document).on('submit', '.formEditarTienda', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+
+  if (!validarFormularioTienda($form)) {
+    Swal.fire('Error', 'Corrige los campos inválidos', 'error');
+    return;
+  }
+
+  const original = $form.data('original');
+  const actual = $form.serialize();
+  if (original === actual) {
+    Swal.fire({ icon: 'info', title: 'Sin cambios', text: 'No se detectaron modificaciones.' });
+    return;
+  }
+
+  $.ajax({
+    url: 'index.php?c=tienda&a=editar',
+    type: 'POST',
+    data: $form.serialize(),
+    dataType: 'json',
+    success: function (r) {
+      const modal = $form.closest('.modal');
+      modal.modal('hide');
+      modal.one('hidden.bs.modal', function () {
+        Swal.fire({
+          icon: r.estado === 'success' ? 'success' : 'error',
+          title: r.estado === 'success' ? 'Actualizado' : 'Error',
+          text: r.mensaje,
+          timer: r.estado === 'success' ? 1500 : 2500,
+          showConfirmButton: r.estado !== 'success'
+        });
+        if (r.estado === 'success') recargarTablaTienda();
+      });
+    },
+    error: function () {
+      Swal.fire('Error', 'No se pudo actualizar la tienda.', 'error');
+    }
+  });
+});
+
+$('#formEliminarTienda').on('submit', function (e) {
+  e.preventDefault();
+  const id = $('#delete_tienda_id').val();
+
+  if (!id) {
+    Swal.fire('Error', 'ID de tienda no definido', 'error');
+    return;
+  }
+
+  $.post('index.php?c=tienda&a=eliminar', { id_tienda: id }, function (respuesta) {
+    if (respuesta.estado === 'success') {
+      $('#delete-tienda-modal').modal('hide');
+      Swal.fire({
+        icon: 'success',
+        title: 'Eliminado',
+        text: respuesta.mensaje,
+        timer: 2000,
+        showConfirmButton: false,
+        timerProgressBar: true
+      });
+      recargarTablaTienda();
+    } else {
+      Swal.fire('Error', respuesta.mensaje, 'error');
+    }
+  }, 'json').fail(function () {
+    Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+  });
+});
+
+// ─── TRACKING ──────────────────────────────────────────────────────────
+$('#formBuscarTracking').on('submit', function (e) {
+  e.preventDefault();
+  const tracking = $('input[name="tracking"]').val().trim();
+  if (!tracking) return;
+
+  $.ajax({
+    url: 'index.php?c=seguimiento&a=buscar',
+    type: 'POST',
+    data: { tracking },
+    dataType: 'json',
+    success: function (res) {
+      let html = '';
+
+      if (res.prealerta) {
+        const p = res.prealerta;
+        html += `
+          <div class="card-box mb-30">
+            <div class="pd-20">
+              <h5 class="mb-3">Prealerta encontrada</h5>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <tr><th>Cliente:</th><td>${p.Nombres_Cliente} ${p.Apellidos_Cliente}</td></tr>
+                  <tr><th>Tienda:</th><td>${p.Tienda_Nombre}</td></tr>
+                  <tr><th>Piezas:</th><td>${p.Prealerta_Piezas}</td></tr>
+                  <tr><th>Peso:</th><td>${p.Prealerta_Peso}</td></tr>
+                  <tr><th>Descripción:</th><td>${p.Prealerta_Descripcion}</td></tr>
+                  <tr><th>Estado:</th><td><span class="badge badge-primary">${p.Estado}</span></td></tr>
+                </table>
+              </div>
+            </div>
+          </div>`;
+      } else if (res.paquete) {
+        const p = res.paquete;
+        html += `
+          <div class="card-box mb-30">
+            <div class="pd-20">
+              <h5 class="mb-3">Paquete encontrado</h5>
+              <div class="row">
+                <div class="col-md-8 col-sm-12">
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <tr><th>Cliente:</th><td>${p.Nombres_Cliente} ${p.Apellidos_Cliente}</td></tr>
+                      <tr><th>Categoría:</th><td>${p.Categoria_Nombre}</td></tr>
+                      <tr><th>Courier:</th><td>${p.Courier_Nombre}</td></tr>
+                      <tr><th>Sucursal:</th><td>${p.Sucursal_Nombre}</td></tr>
+                      <tr><th>Peso:</th><td>${p.Paquete_Peso}</td></tr>
+                      <tr><th>Descripción:</th><td>${p.Prealerta_Descripcion}</td></tr>
+                      <tr><th>Estado:</th><td><span class="badge badge-primary">${p.Estado}</span></td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-12 text-center">
+                  ${p.Qr_code ? `
+                    <div class="border p-3 bg-light rounded">
+                      <img src="src/storage/qr/${p.Qr_code}" class="img-fluid" style="max-width: 200px;">
+                      <p class="mt-2 text-muted">Escanea este código</p>
+                    </div>` : `
+                    <div class="border p-3 bg-light rounded text-center">
+                      <i class="dw dw-box-2" style="font-size: 5rem; color: #1845A2;"></i>
+                      <p class="mt-2">Paquete registrado</p>
+                    </div>`
+                  }
+                </div>
+              </div>
+            </div>
+          </div>`;
+      } else {
+        html += `
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            No se encontró ninguna prealerta o paquete con el código "${tracking}".
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>`;
+      }
+
+      $('#resultadoTracking').html(html);
+    },
+    error: function () {
+      Swal.fire('Error', 'No se pudo buscar el tracking.', 'error');
+    }
+  });
+});
+
+// ─── USUARIO ───────────────────────────────────────────────────────────
+function recargarTablaUsuario() {
+  recargarTablaGenerica('#usuariosTable', 'index.php?c=usuario&a=index', 'edit-usuario-modal');
+}
+
+function setDeleteUsuarioId(id) {
+  $('#delete_usuario_id').val(id);
+}
+
+$(document).on('click', '.toggle-password', function () {
+  const input = $(this).siblings('input');
+  const icon = $(this).find('i');
+  const isPassword = input.attr('type') === 'password';
+  input.attr('type', isPassword ? 'text' : 'password');
+  icon.toggleClass('fa-eye fa-eye-slash');
+});
+
+$('#formRegistrarUsuario').on('submit', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+  const datos = $form.serialize();
+
+  $.ajax({
+    url: $form.attr('action'),
+    type: 'POST',
+    data: datos,
+    dataType: 'json',
+    success: function (res) {
+      $('#usuarioModal').modal('hide');
+      setTimeout(() => {
+        if (res.estado === 'success') {
+          limpiarFormulario($form);
+          Swal.fire({ icon: 'success', title: 'Éxito', text: res.mensaje, timer: 1500, showConfirmButton: false });
+          recargarTablaUsuario();
+        } else {
+          Swal.fire('Error', res.mensaje, 'error');
+        }
+      }, 300);
+    },
+    error: function () {
+      Swal.fire('Error', 'No se pudo registrar el usuario.', 'error');
+    }
+  });
+});
+
+let datosOriginalesUsuario = {};
+
+$(document).on('show.bs.modal', '.modal[id^="edit-usuario-modal"]', function () {
+  const $form = $(this).find('form[id^="formEditarUsuario-"]');
+  datosOriginalesUsuario = {};
+  $form.find('input, select, textarea').each(function () {
+    const name = $(this).attr('name');
+    if (name) datosOriginalesUsuario[name] = $(this).val();
+  });
+});
+
+$(document).on('submit', 'form[id^="formEditarUsuario-"]', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+
+  let hayCambios = false;
+  $form.find('input, select, textarea').each(function () {
+    const name = $(this).attr('name');
+    if (name && datosOriginalesUsuario[name] !== $(this).val()) {
+      hayCambios = true;
+      return false;
+    }
+  });
+
+  if (!hayCambios) {
+    Swal.fire({ icon: 'info', title: 'Sin cambios', text: 'No se detectaron modificaciones en los datos.', timer: 2000, showConfirmButton: false });
+    return;
+  }
+
+  const datos = $form.serialize();
+  $.ajax({
+    url: $form.attr('action'),
+    type: 'POST',
+    data: datos,
+    dataType: 'json',
+    success: function (res) {
+      $form.closest('.modal').modal('hide');
+      setTimeout(() => {
+        if (res.estado === 'success') {
+          Swal.fire({ icon: 'success', title: 'Actualizado', text: res.mensaje, timer: 1500, showConfirmButton: false });
+          recargarTablaUsuario();
+        } else {
+          Swal.fire('Error', res.mensaje, 'error');
+        }
+      }, 300);
+    },
+    error: function () {
+      Swal.fire('Error', 'No se pudo actualizar el usuario.', 'error');
+    }
+  });
+});
+
+$(document).on('hidden.bs.modal', '.modal[id^="edit-usuario-modal"]', function () {
+  datosOriginalesUsuario = {};
+  $(this).find('.is-valid, .is-invalid').removeClass('is-valid is-invalid');
+  $(this).find('.invalid-feedback').remove();
+});
+
+$('#formEliminarUsuario').on('submit', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+  const datos = $form.serialize();
+
+  $.ajax({
+    url: $form.attr('action'),
+    type: 'POST',
+    data: datos,
+    dataType: 'json',
+    success: function (res) {
+      $('#delete-usuario-modal').modal('hide');
+      setTimeout(() => {
+        if (res.estado === 'success') {
+          Swal.fire({ icon: 'success', title: 'Eliminado', text: res.mensaje, timer: 1500, showConfirmButton: false });
+          recargarTablaUsuario();
+        } else {
+          Swal.fire('Error', res.mensaje, 'error');
+        }
+      }, 300);
+    },
+    error: function () {
+      Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
+    }
+  });
+});
+
+$(document).on('hidden.bs.modal', '#usuarioModal', function () {
+  const $form = $('#formRegistrarUsuario');
+  limpiarFormulario($form);
+});
 });

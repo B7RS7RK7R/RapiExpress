@@ -308,8 +308,8 @@
         </div>
     </div>
 
-    <script src="assets\js\Script\Modulos\Clientes\Clientes_Ajax.js"></script>
-    <script src="assets/js/Script/Modulos/Clientes/Clientes_AUX.js"></script>
+    <script src="assets/js/script/sistema.js"></script>
+<script src="assets/js/script/validaciones/validarCliente.js"></script>
 
 </body>
 

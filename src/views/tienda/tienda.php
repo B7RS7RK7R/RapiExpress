@@ -190,10 +190,8 @@ use RapiExpress\Helpers\Lang;
         </div>
     </div>
 
-<script src="assets\js\Script\Modulos\Tiendas\Tiendas_Ajax.js"></script>
-<script src="assets/js/Script/Modulos/Tiendas/Tiendas_AUX.js"></script>
-
-    
+<script src="assets/js/script/sistema.js"></script>
+<script src="assets/js/script/validaciones/validarTienda.js"></script>
 </body>
 
 </html>
