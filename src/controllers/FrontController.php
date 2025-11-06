@@ -96,7 +96,7 @@ class FrontController
         ],
         'saca'     => [
             'controller' => 'sacaController', 
-            'methods' => ['index','registrar','editar','eliminar','obtenerSaca'], 
+            'methods' => ['index','registrar','editar','eliminar','obtenerSaca','obtenerDatosImpresion','generarQR',], 
             'default' => 'index',
             'subfolder' => 'sacas'
         ],

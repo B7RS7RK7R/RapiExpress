@@ -1,10 +1,14 @@
 <?php
 namespace RapiExpress\Interface;
 
-interface IPrealertaModel {
+interface IPrealertaModel
+{
+    
+    public function obtenerTodos();
+    public function obtenerPorId(int $id);
+    public function obtenerPorTrackingTienda(string $tracking);    
     public function registrar(array $data);
-    public function obtenerTodas();
-    public function obtenerPorId($id);
-    public function actualizar(array $data);
-    public function eliminar($id);
+    public function editar(int $id, array $data);
+    public function eliminar(int $id);
+    public function eliminarDespuesDeConsolidar(int $id);
 }

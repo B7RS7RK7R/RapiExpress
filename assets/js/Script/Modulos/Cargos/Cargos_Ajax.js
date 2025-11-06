@@ -6,6 +6,54 @@ $('#cargoModal').on('hidden.bs.modal', function () {
     $form.find('.invalid-feedback').text(''); // limpiar mensajes de error
 });
 
+function recargarTabla() {
+    // ✅ Destruir correctamente antes de recargar
+    if ($.fn.DataTable.isDataTable('#cargosTable')) {
+        $('#cargosTable').DataTable().destroy();
+    }
+
+    $.ajax({
+        url: 'index.php?c=cargo&a=index',
+        type: 'GET',
+        success: function (html) {
+            // Extraer nuevo contenido de la tabla y modales
+            const nuevoTbody = $(html).find('#cargosTable tbody').html();
+            const nuevosModales = $(html).find('.modal.fade[id^="edit-cargo-modal"]');
+
+            // Reemplazar cuerpo de la tabla
+            $('#cargosTable tbody').html(nuevoTbody);
+
+            // Eliminar modales antiguos y agregar nuevos
+            $('.modal.fade[id^="edit-cargo-modal"]').remove();
+            $('body').append(nuevosModales);
+
+            // ✅ Re-inicializar DataTable
+            $('#cargosTable').DataTable({
+                destroy: true, // <-- Muy importante para evitar el warning
+                responsive: true,
+                autoWidth: false,
+                language: {
+                    url: 'assets/Temple/src/plugins/datatables/js/es_es.json'
+                },
+                columnDefs: [
+                    { targets: 'datatable-nosort', orderable: false }
+                ]
+            });
+
+            // ✅ Restaurar color de íconos
+            $('.table-actions a').each(function () {
+                const color = $(this).data('color');
+                if (color) $(this).find('i').css('color', color);
+            });
+        },
+        error: function () {
+            Swal.fire('Error', 'No se pudo recargar la lista de cargos.', 'error');
+        }
+    });
+}
+
+
+
 // Registrar cargo via AJAX
 $('#formRegistrarCargo').on('submit', function (e) {
     e.preventDefault();
@@ -136,23 +184,57 @@ $('#formEliminarCargo').on('submit', function (e) {
         }
     });
 });
+
+
 function recargarTabla() {
+    const tabla = $('#cargosTable').DataTable();
+
+    // Destruir tabla antes de recargar
+    if ($.fn.DataTable.isDataTable('#cargosTable')) {
+        tabla.destroy();
+    }
+
     $.ajax({
         url: 'index.php?c=cargo&a=index',
         type: 'GET',
         success: function (html) {
+            // Extraer nuevo tbody y modales
             const nuevoTbody = $(html).find('#cargosTable tbody').html();
+            const nuevosModales = $(html).find('.modal.fade[id^="edit-cargo-modal"]');
+
+            // Reemplazar contenido sin tocar cabecera
             $('#cargosTable tbody').html(nuevoTbody);
 
-            const nuevosModales = $(html).find('.modal.fade[id^="edit-cargo-modal"]');
+            // Reemplazar modales de edición
             $('.modal.fade[id^="edit-cargo-modal"]').remove();
             $('body').append(nuevosModales);
+
+            // 🔄 Re-inicializar DataTable con configuración responsive
+            $('#cargosTable').DataTable({
+                responsive: true,
+                autoWidth: false,
+                language: {
+                    url: 'assets/Temple/src/plugins/datatables/js/es_es.json'
+                },
+                columnDefs: [
+                    { targets: 'datatable-nosort', orderable: false }
+                ]
+            });
+
+            // 🔧 Restaurar colores a íconos de acción
+            $('.table-actions a').each(function () {
+                const color = $(this).data('color');
+                if (color) {
+                    $(this).find('i').css('color', color);
+                }
+            });
         },
         error: function () {
             Swal.fire('Error', 'No se pudo recargar la lista de cargos.', 'error');
         }
     });
 }
+
 
 
 function setDeleteId(id) {

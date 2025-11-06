@@ -7,6 +7,8 @@ use RapiExpress\models\Tienda;
 use RapiExpress\models\Courier;
 use RapiExpress\models\Cargo;
 use RapiExpress\models\Sucursal;
+use RapiExpress\Helpers\Url;
+use RapiExpress\Helpers\Lang;
 
 /**
  * Función auxiliar para obtener todos los usuarios
@@ -22,29 +24,31 @@ function obtenerTodosUsuarios() {
 }
 
 /**
+ * Función auxiliar para verificar autenticación
+ */
+function verificarAutenticacion() {
+    if (!isset($_SESSION['usuario']) || !isset($_SESSION['ID_Cargo'])) {
+        error_log("No hay sesión activa, redirigiendo a login");
+        Url::redirect('auth', 'login');
+    }
+}
+
+/**
  * Función principal del dashboard: redirige según el rol
  */
 function dashboard_index() {
     error_log("=== Ejecutando dashboard_index ===");
     
-    if (!isset($_SESSION['usuario']) || !isset($_SESSION['ID_Cargo'])) {
-        error_log("No hay sesión activa, redirigiendo a login");
-        ob_clean();
-        header('Location: index.php?c=auth&a=login', true, 302);
-        exit();
-    }
+    verificarAutenticacion();
 
+    // Determinar el rol del usuario y redirigir directamente
     if ((int)$_SESSION['ID_Cargo'] === 1) {
-        error_log("Usuario es admin, redirigiendo a dashboard admin");
-        ob_clean();
-        header('Location: index.php?c=dashboard&a=admin', true, 302);
-        exit();
+        error_log("Usuario es admin, mostrando dashboard admin");
+        dashboard_admin();
+    } else {
+        error_log("Usuario es empleado, mostrando dashboard empleado");
+        dashboard_empleado();
     }
-
-    error_log("Usuario es empleado, redirigiendo a dashboard empleado");
-    ob_clean();
-    header('Location: index.php?c=dashboard&a=empleado', true, 302);
-    exit();
 }
 
 /**
@@ -53,19 +57,12 @@ function dashboard_index() {
 function dashboard_admin() {
     error_log("=== Ejecutando dashboard_admin ===");
     
-    if (!isset($_SESSION['usuario'])) {
-        error_log("No hay sesión en dashboard_admin");
-        ob_clean();
-        header('Location: index.php?c=auth&a=login', true, 302);
-        exit();
-    }
+    verificarAutenticacion();
 
     // Verificar que sea admin
     if ((int)$_SESSION['ID_Cargo'] !== 1) {
-        error_log("Usuario no es admin, redirigiendo");
-        ob_clean();
-        header('Location: index.php?c=dashboard&a=empleado', true, 302);
-        exit();
+        error_log("Usuario no es admin, redirigiendo a dashboard empleado");
+        Url::redirect('dashboard', 'empleado');
     }
 
     try {
@@ -97,6 +94,10 @@ function dashboard_admin() {
         $totalCouriers = count($couriers);
         error_log("Total couriers obtenidos: $totalCouriers");
 
+        // Inicializar variables adicionales para evitar warnings
+        $totalPaquetes = 0;
+        $totalReportes = 0;
+
         error_log("Mostrando vista dashboard admin");
         include __DIR__ . '/../../views/dashboard/dashboard.php';
 
@@ -105,14 +106,7 @@ function dashboard_admin() {
         error_log("Stack trace: " . $e->getTraceAsString());
         
         // Mostrar error amigable
-        ob_clean();
-        echo "<div style='padding: 20px; background: #fee; border: 1px solid #c00; margin: 20px;'>";
-        echo "<h2>Error en Dashboard</h2>";
-        echo "<p><strong>Error:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
-        echo "<p><strong>Archivo:</strong> " . htmlspecialchars($e->getFile()) . " (línea " . $e->getLine() . ")</p>";
-        echo "<a href='index.php?c=auth&a=logout'>Cerrar sesión</a>";
-        echo "</div>";
-        exit();
+        mostrarErrorDashboard($e);
     }
 }
 
@@ -122,11 +116,12 @@ function dashboard_admin() {
 function dashboard_empleado() {
     error_log("=== Ejecutando dashboard_empleado ===");
     
-    if (!isset($_SESSION['usuario'])) {
-        error_log("No hay sesión en dashboard_empleado");
-        ob_clean();
-        header('Location: index.php?c=auth&a=login', true, 302);
-        exit();
+    verificarAutenticacion();
+
+    // Verificar que NO sea admin (empleados tienen ID_Cargo !== 1)
+    if ((int)$_SESSION['ID_Cargo'] === 1) {
+        error_log("Usuario es admin, redirigiendo a dashboard admin");
+        Url::redirect('dashboard', 'admin');
     }
 
     try {
@@ -149,6 +144,10 @@ function dashboard_empleado() {
         $couriers = $courierModel->obtenerTodos();
         $totalCouriers = count($couriers);
 
+        // Inicializar variables adicionales
+        $totalPaquetes = 0;
+        $totalReportes = 0;
+
         error_log("Mostrando vista dashboard empleado");
         include __DIR__ . '/../../views/dashboard/dashboard_empleado.php';
 
@@ -156,14 +155,106 @@ function dashboard_empleado() {
         error_log("Error en Dashboard Empleado: " . $e->getMessage());
         error_log("Stack trace: " . $e->getTraceAsString());
         
-        // Mostrar error amigable
-        ob_clean();
-        echo "<div style='padding: 20px; background: #fee; border: 1px solid #c00; margin: 20px;'>";
-        echo "<h2>Error en Dashboard</h2>";
-        echo "<p><strong>Error:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
-        echo "<p><strong>Archivo:</strong> " . htmlspecialchars($e->getFile()) . " (línea " . $e->getLine() . ")</p>";
-        echo "<a href='index.php?c=auth&a=logout'>Cerrar sesión</a>";
-        echo "</div>";
-        exit();
+        mostrarErrorDashboard($e);
     }
+}
+
+/**
+ * Muestra un error amigable del dashboard
+ */
+function mostrarErrorDashboard(\Throwable $e) {
+    ob_clean();
+    ?>
+    <!DOCTYPE html>
+    <html lang="<?= Lang::current() ?>">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title><?= Lang::get('error') ?> - Dashboard</title>
+        <link rel="stylesheet" href="<?= Url::asset('Temple/vendors/styles/core.css') ?>">
+        <style>
+            .error-container {
+                max-width: 800px;
+                margin: 50px auto;
+                padding: 30px;
+                background: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            .error-icon {
+                font-size: 64px;
+                color: #dc3545;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .error-title {
+                color: #dc3545;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .error-details {
+                background: #f8f9fa;
+                padding: 15px;
+                border-left: 4px solid #dc3545;
+                border-radius: 4px;
+                margin: 20px 0;
+                font-family: monospace;
+                font-size: 13px;
+            }
+            .error-actions {
+                text-align: center;
+                margin-top: 30px;
+            }
+            .btn {
+                display: inline-block;
+                padding: 10px 30px;
+                margin: 0 10px;
+                background: #007bff;
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+                transition: all 0.3s;
+            }
+            .btn:hover {
+                background: #0056b3;
+                transform: translateY(-2px);
+            }
+            .btn-secondary {
+                background: #6c757d;
+            }
+            .btn-secondary:hover {
+                background: #545b62;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="error-container">
+            <div class="error-icon">⚠️</div>
+            <h1 class="error-title"><?= Lang::get('dashboard_error') ?? 'Error en Dashboard' ?></h1>
+            
+            <p style="text-align: center; color: #666; margin-bottom: 30px;">
+                <?= Lang::get('dashboard_error_message') ?? 'Ha ocurrido un error al cargar el dashboard.' ?>
+            </p>
+            
+            <?php if (ini_get('display_errors')): ?>
+            <div class="error-details">
+                <strong><?= Lang::get('error') ?>:</strong> <?= htmlspecialchars($e->getMessage()) ?><br>
+                <strong><?= Lang::get('file') ?>:</strong> <?= htmlspecialchars($e->getFile()) ?><br>
+                <strong><?= Lang::get('line') ?>:</strong> <?= $e->getLine() ?>
+            </div>
+            <?php endif; ?>
+            
+            <div class="error-actions">
+                <a href="<?= Url::to('dashboard', 'index') ?>" class="btn">
+                    <?= Lang::get('try_again') ?? 'Intentar nuevamente' ?>
+                </a>
+                <a href="<?= Url::toPublic('auth', 'logout') ?>" class="btn btn-secondary">
+                    <?= Lang::get('logout') ?? 'Cerrar sesión' ?>
+                </a>
+            </div>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit();
 }

@@ -4,12 +4,13 @@ namespace RapiExpress\Models;
 use RapiExpress\Config\Conexion;
 use PDO;
 use PDOException;
+use RapiExpress\Interface\IAuthModel;
 
 /**
  * Modelo de autenticación
  * Responsabilidad única: Gestionar operaciones de autenticación y usuarios
  */
-class Auth extends Conexion {
+class Auth extends Conexion  implements IAuthModel {
 
     private const USERNAME_PATTERN = '/^[a-zA-Z0-9_]{3,20}$/';
     private const PASSWORD_PATTERN = '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/';

@@ -3,16 +3,16 @@ namespace RapiExpress\Models;
 
 use PDOException;
 use RapiExpress\Config\Conexion;
+use RapiExpress\Helpers\Lang;
+use RapiExpress\Interface\IConexion;
 
-class Cargo extends Conexion {
+class Cargo extends Conexion implements IConexion {
 
-    // ✅ Validar nombre de cargo: obligatorio, letras y espacios, max 20
     public function validarNombre(string $nombre): bool {
         $nombre = trim($nombre);
         return !empty($nombre) && preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{1,20}$/', $nombre);
     }
 
-    // ✅ Verifica si un cargo existe (opcionalmente excluyendo un ID)
     public function verificarCargoExistente(string $nombreCargo, ?int $idCargo = null): bool {
         try {
             if ($idCargo) {
@@ -25,11 +25,10 @@ class Cargo extends Conexion {
             return $stmt->fetchColumn() > 0;
         } catch (PDOException $e) {
             error_log("Error al verificar cargo existente: " . $e->getMessage());
-            return true; // Si falla, asumimos que existe por seguridad
+            return true;
         }
     }
 
-    // ✅ Registrar cargo
     public function registrar(array $data): string {
         if (!$this->validarNombre($data['Cargo_Nombre'])) {
             return 'error_validacion';
@@ -43,7 +42,6 @@ class Cargo extends Conexion {
         }
     }
 
-    // ✅ Actualizar cargo
     public function actualizar(array $data): string {
         if (!$this->validarNombre($data['Cargo_Nombre'])) {
             return 'error_validacion';
@@ -57,7 +55,6 @@ class Cargo extends Conexion {
         }
     }
 
-    // ✅ Obtener todos los cargos
     public function obtenerTodos(): array {
         try {
             $stmt = $this->db->query("SELECT * FROM cargos ORDER BY ID_Cargo DESC");
@@ -68,7 +65,6 @@ class Cargo extends Conexion {
         }
     }
 
-    // ✅ Obtener cargo por ID
     public function obtenerPorId(int $id): ?array {
         try {
             $stmt = $this->db->prepare("SELECT * FROM cargos WHERE ID_Cargo = ?");
@@ -80,7 +76,6 @@ class Cargo extends Conexion {
         }
     }
 
-    // ✅ Verifica si el cargo está asignado a algún usuario
     private function cargoAsignadoAUsuario(int $idCargo): bool {
         try {
             $stmt = $this->db->prepare("SELECT COUNT(*) FROM usuarios WHERE ID_Cargo = ?");
@@ -88,11 +83,10 @@ class Cargo extends Conexion {
             return $stmt->fetchColumn() > 0;
         } catch (PDOException $e) {
             error_log("Error al verificar uso de cargo: " . $e->getMessage());
-            return true; // seguridad
+            return true;
         }
     }
 
-    // ✅ Eliminar cargo
     public function eliminar(int $id): string {
         try {
             if ($this->cargoAsignadoAUsuario($id)) {

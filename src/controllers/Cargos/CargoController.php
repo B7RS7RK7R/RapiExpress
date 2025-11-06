@@ -1,5 +1,6 @@
 <?php
 use RapiExpress\Models\Cargo;
+use RapiExpress\Helpers\Lang;
 
 // ✅ Listar cargos
 function cargo_index() {
@@ -19,15 +20,15 @@ function cargo_registrar() {
         $nombreCargo = trim($_POST['Cargo_Nombre']);
 
         if (!$cargoModel->validarNombre($nombreCargo)) {
-            $respuesta = ['estado' => 'error', 'mensaje' => 'Nombre inválido: solo letras y espacios, máximo 20 caracteres.'];
+            $respuesta = ['estado' => 'error', 'mensaje' => Lang::get('cargos.invalid_name')];
         } elseif ($cargoModel->verificarCargoExistente($nombreCargo)) {
-            $respuesta = ['estado' => 'error', 'mensaje' => 'Ya existe un cargo con ese nombre.'];
+            $respuesta = ['estado' => 'error', 'mensaje' => Lang::get('cargos.duplicate_name')];
         } else {
             $resultado = $cargoModel->registrar(['Cargo_Nombre' => $nombreCargo]);
             $respuesta = match ($resultado) {
-                'registro_exitoso' => ['estado' => 'success', 'mensaje' => 'Cargo registrado correctamente.'],
-                'error_validacion' => ['estado' => 'error', 'mensaje' => 'Error de validación en el modelo.'],
-                default => ['estado' => 'error', 'mensaje' => 'Error al registrar en la base de datos.']
+                'registro_exitoso' => ['estado' => 'success', 'mensaje' => Lang::get('cargos.register_success')],
+                'error_validacion' => ['estado' => 'error', 'mensaje' => Lang::get('cargos.model_validation_error')],
+                default => ['estado' => 'error', 'mensaje' => Lang::get('cargos.db_error')]
             };
         }
 
@@ -47,15 +48,15 @@ function cargo_editar() {
         ];
 
         if (!$cargoModel->validarNombre($data['Cargo_Nombre'])) {
-            $respuesta = ['estado' => 'error', 'mensaje' => 'Nombre inválido: solo letras y espacios, máximo 20 caracteres.'];
+            $respuesta = ['estado' => 'error', 'mensaje' => Lang::get('cargos.invalid_name')];
         } elseif ($cargoModel->verificarCargoExistente($data['Cargo_Nombre'], $data['ID_Cargo'])) {
-            $respuesta = ['estado' => 'error', 'mensaje' => 'Ya existe un cargo con ese nombre.'];
+            $respuesta = ['estado' => 'error', 'mensaje' => Lang::get('cargos.duplicate_name')];
         } else {
             $resultado = $cargoModel->actualizar($data);
             $respuesta = match ($resultado) {
-                'actualizado' => ['estado' => 'success', 'mensaje' => 'Cargo actualizado correctamente.'],
-                'error_validacion' => ['estado' => 'error', 'mensaje' => 'Error de validación en el modelo.'],
-                default => ['estado' => 'error', 'mensaje' => 'Error al actualizar en la base de datos.']
+                'actualizado' => ['estado' => 'success', 'mensaje' => Lang::get('cargos.update_success')],
+                'error_validacion' => ['estado' => 'error', 'mensaje' => Lang::get('cargos.model_validation_error')],
+                default => ['estado' => 'error', 'mensaje' => Lang::get('cargos.db_error')]
             };
         }
 
@@ -73,9 +74,9 @@ function cargo_eliminar() {
         $resultado = $cargoModel->eliminar($id);
 
         $respuesta = match ($resultado) {
-            'eliminado' => ['estado' => 'success', 'mensaje' => 'Cargo eliminado correctamente.'],
-            'cargo_en_uso' => ['estado' => 'error', 'mensaje' => 'No se puede eliminar este cargo porque está asignado a uno o más usuarios.'],
-            default => ['estado' => 'error', 'mensaje' => 'Error al eliminar el cargo.']
+            'eliminado' => ['estado' => 'success', 'mensaje' => Lang::get('cargos.delete_success')],
+            'cargo_en_uso' => ['estado' => 'error', 'mensaje' => Lang::get('cargos.in_use')],
+            default => ['estado' => 'error', 'mensaje' => Lang::get('cargos.delete_error')]
         };
 
         header('Content-Type: application/json');
@@ -92,7 +93,7 @@ function cargo_obtenerCargo() {
         $cargo = $cargoModel->obtenerPorId($id);
 
         header('Content-Type: application/json');
-        echo json_encode($cargo ?: ['error' => 'Cargo no encontrado']);
+        echo json_encode($cargo ?: ['error' => Lang::get('cargos.not_found')]);
         exit();
     }
 }

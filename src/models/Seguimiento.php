@@ -2,8 +2,11 @@
 namespace RapiExpress\Models;
 use RapiExpress\Config\Conexion;
 use PDO;
+use RapiExpress\Interface\ISeguimientoModel;
 
-class Seguimiento extends Conexion {
+
+
+class Seguimiento extends Conexion implements ISeguimientoModel {
 
     // Obtener seguimientos con info de cliente y paquete
     public function obtenerTodos($filtro = null) {

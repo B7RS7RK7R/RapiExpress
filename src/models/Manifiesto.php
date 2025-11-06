@@ -3,8 +3,9 @@ namespace RapiExpress\Models;
 
 use RapiExpress\Config\Conexion;
 use PDOException;
+use RapiExpress\Interface\IManifiestoModel;
 
-class Manifiesto extends Conexion {
+class Manifiesto extends Conexion implements IManifiestoModel {
 
     public function obtenerTodos(): array {
         try {

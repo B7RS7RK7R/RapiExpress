@@ -74,7 +74,7 @@ function prealerta_registrar() {
     exit();
 }
 
-// ✅ Editar Prealerta (AJAX) - CORREGIDO
+// ✅ Editar Prealerta (AJAX) - CORREGIDO CON ELIMINACIÓN
 function prealerta_editar() {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         echo json_encode(['estado' => 'error', 'mensaje' => 'Método no permitido.']);
@@ -114,7 +114,7 @@ function prealerta_editar() {
         exit();
     }
 
-    // ✅ PROCESO DE CONSOLIDACIÓN
+    // ✅ PROCESO DE CONSOLIDACIÓN CON ELIMINACIÓN
     try {
         // Validar que se hayan enviado categoría y courier
         if (empty($data['ID_Categoria']) || empty($data['ID_Courier'])) {
@@ -136,7 +136,7 @@ function prealerta_editar() {
         // 2. Generar tracking único para el paquete
         $trackingPaquete = $paqueteModel->generarTracking();
         
-        // 3. Crear el paquete con los datos de la prealerta
+        // 3. Crear el paquete con los datos de la prealerta (INCLUYENDO PIEZAS)
         $dataPaquete = [
             'ID_Prealerta' => $id,
             'ID_Usuario' => $_SESSION['ID_Usuario'],
@@ -149,6 +149,7 @@ function prealerta_editar() {
             'ID_Courier' => $data['ID_Courier'],
             'Prealerta_Descripcion' => $prealerta['Prealerta_Descripcion'],
             'Paquete_Peso' => $prealerta['Prealerta_Peso'],
+            'Paquete_Piezas' => $prealerta['Prealerta_Piezas'], // ✅ PASAR LAS PIEZAS
             'Estado' => 'En tránsito'
         ];
         
@@ -163,17 +164,16 @@ function prealerta_editar() {
             throw new Exception($errorMsg);
         }
         
-        // 5. Actualizar el estado de la prealerta a Consolidado
-        $data['Estado'] = 'Consolidado';
-        $resultado = $prealertaModel->editar($id, $data);
+        // 5. ✅ ELIMINAR LA PREALERTA (en lugar de cambiar su estado)
+        $eliminado = $prealertaModel->eliminarDespuesDeConsolidar($id);
         
-        if ($resultado !== 'actualizacion_exitosa') {
-            throw new Exception('Error al actualizar el estado de la prealerta.');
+        if (!$eliminado) {
+            throw new Exception('El paquete se creó correctamente, pero hubo un problema al eliminar la prealerta.');
         }
         
         $respuesta = [
             'estado' => 'success', 
-            'mensaje' => 'Prealerta consolidada y convertida en paquete correctamente. Tracking: ' . $trackingPaquete,
+            'mensaje' => 'Prealerta consolidada exitosamente. Se creó el paquete con tracking: ' . $trackingPaquete . ' y se eliminó la prealerta.',
             'tracking_paquete' => $trackingPaquete
         ];
         

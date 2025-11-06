@@ -31,6 +31,44 @@ public function obtenerTodas() {
         return [];
     }
 }
+/**
+ * ✅ AGREGAR ESTE MÉTODO AL MODELO Saca (documento 8)
+ * Ubicación: src/Models/Saca.php
+ * Agregar después del método actualizar()
+ */
+
+/**
+ * Actualiza el campo Qr_Code de una saca
+ * 
+ * @param int $idSaca ID de la saca
+ * @param string $nombreArchivo Nombre del archivo QR
+ * @return bool True si se actualizó correctamente
+ */
+public function actualizarQR(int $idSaca, string $nombreArchivo): bool
+{
+    try {
+        $stmt = $this->db->prepare("
+            UPDATE sacas 
+            SET Qr_Code = :qr_code 
+            WHERE ID_Saca = :id
+        ");
+        
+        $resultado = $stmt->execute([
+            ':qr_code' => $nombreArchivo,
+            ':id' => $idSaca
+        ]);
+        
+        if ($resultado) {
+            error_log("✅ QR actualizado en BD para saca ID={$idSaca}: {$nombreArchivo}");
+        }
+        
+        return $resultado;
+        
+    } catch (PDOException $e) {
+        error_log("❌ Error al actualizar QR en BD: " . $e->getMessage());
+        return false;
+    }
+}
 
 
 public function obtenerPaquetesDeSaca(int $idSaca): array

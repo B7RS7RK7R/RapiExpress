@@ -17,7 +17,10 @@ function casillero_registrar() {
     header('Content-Type: application/json');
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        echo json_encode(['estado' => 'error', 'mensaje' => 'Método no permitido']);
+        echo json_encode([
+            'estado' => 'error',
+            'mensaje' => Lang::get('method_not_allowed')
+        ]);
         exit();
     }
 
@@ -31,22 +34,40 @@ function casillero_registrar() {
 
     switch ($resultado) {
         case 'registro_exitoso':
-            $respuesta = ['estado' => 'success', 'mensaje' => 'Casillero registrado correctamente.'];
+            $respuesta = [
+                'estado' => 'success',
+                'mensaje' => Lang::get('casillero_registered_success')
+            ];
             break;
         case 'casillero_existente':
-            $respuesta = ['estado' => 'info', 'mensaje' => 'El nombre del casillero ya está en uso.'];
+            $respuesta = [
+                'estado' => 'info',
+                'mensaje' => Lang::get('casillero_exists')
+            ];
             break;
         case 'campos_vacios':
-            $respuesta = ['estado' => 'warning', 'mensaje' => 'Todos los campos son obligatorios.'];
+            $respuesta = [
+                'estado' => 'warning',
+                'mensaje' => Lang::get('fill_required_fields')
+            ];
             break;
         case 'nombre_invalido':
-            $respuesta = ['estado' => 'warning', 'mensaje' => 'El nombre del casillero contiene caracteres inválidos.'];
+            $respuesta = [
+                'estado' => 'warning',
+                'mensaje' => Lang::get('invalid_name_format')
+            ];
             break;
         case 'direccion_invalida':
-            $respuesta = ['estado' => 'warning', 'mensaje' => 'La dirección no cumple con el formato permitido.'];
+            $respuesta = [
+                'estado' => 'warning',
+                'mensaje' => Lang::get('invalid_address_format')
+            ];
             break;
         default:
-            $respuesta = ['estado' => 'error', 'mensaje' => 'Error al registrar el casillero.'];
+            $respuesta = [
+                'estado' => 'error',
+                'mensaje' => Lang::get('casillero_register_error')
+            ];
     }
 
     echo json_encode($respuesta);
@@ -56,7 +77,10 @@ function casillero_editar() {
     header('Content-Type: application/json');
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        echo json_encode(['estado' => 'error', 'mensaje' => 'Método no permitido']);
+        echo json_encode([
+            'estado' => 'error',
+            'mensaje' => Lang::get('method_not_allowed')
+        ]);
         exit();
     }
 
@@ -71,22 +95,40 @@ function casillero_editar() {
 
     switch ($resultado) {
         case 'actualizacion_exitosa':
-            $respuesta = ['estado' => 'success', 'mensaje' => 'Casillero actualizado correctamente.'];
+            $respuesta = [
+                'estado' => 'success',
+                'mensaje' => Lang::get('casillero_updated_success')
+            ];
             break;
         case 'sin_cambios':
-            $respuesta = ['estado' => 'info', 'mensaje' => 'No se realizaron cambios.'];
+            $respuesta = [
+                'estado' => 'info',
+                'mensaje' => Lang::get('no_changes_made')
+            ];
             break;
         case 'casillero_existente':
-            $respuesta = ['estado' => 'warning', 'mensaje' => 'Ya existe un casillero con ese nombre.'];
+            $respuesta = [
+                'estado' => 'warning',
+                'mensaje' => Lang::get('casillero_exists')
+            ];
             break;
         case 'nombre_invalido':
-            $respuesta = ['estado' => 'warning', 'mensaje' => 'El nombre no cumple con el formato.'];
+            $respuesta = [
+                'estado' => 'warning',
+                'mensaje' => Lang::get('invalid_name_format')
+            ];
             break;
         case 'direccion_invalida':
-            $respuesta = ['estado' => 'warning', 'mensaje' => 'La dirección no cumple con el formato.'];
+            $respuesta = [
+                'estado' => 'warning',
+                'mensaje' => Lang::get('invalid_address_format')
+            ];
             break;
         default:
-            $respuesta = ['estado' => 'error', 'mensaje' => 'Error al actualizar el casillero.'];
+            $respuesta = [
+                'estado' => 'error',
+                'mensaje' => Lang::get('casillero_update_error')
+            ];
     }
 
     echo json_encode($respuesta);
@@ -96,7 +138,10 @@ function casillero_eliminar() {
     header('Content-Type: application/json');
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        echo json_encode(['estado' => 'error', 'mensaje' => 'Método no permitido']);
+        echo json_encode([
+            'estado' => 'error',
+            'mensaje' => Lang::get('method_not_allowed')
+        ]);
         exit();
     }
 
@@ -104,7 +149,10 @@ function casillero_eliminar() {
     $id = intval($_POST['ID_Casillero'] ?? 0);
 
     if ($id <= 0) {
-        echo json_encode(['estado' => 'error', 'mensaje' => 'ID de casillero inválido.']);
+        echo json_encode([
+            'estado' => 'error',
+            'mensaje' => Lang::get('invalid_id')
+        ]);
         exit();
     }
 
@@ -112,21 +160,27 @@ function casillero_eliminar() {
 
     switch ($resultado) {
         case 'eliminado':
-            $respuesta = ['estado' => 'success', 'mensaje' => 'Casillero eliminado correctamente.'];
+            $respuesta = [
+                'estado' => 'success',
+                'mensaje' => Lang::get('casillero_deleted_success')
+            ];
             break;
         case 'no_existente':
-            $respuesta = ['estado' => 'warning', 'mensaje' => 'El casillero no existe.'];
+            $respuesta = [
+                'estado' => 'warning',
+                'mensaje' => Lang::get('casillero_not_found')
+            ];
             break;
         case 'casillero_asignado':
             $respuesta = [
                 'estado' => 'warning',
-                'mensaje' => 'No se puede eliminar este casillero porque está asignado a clientes o prealertas.'
+                'mensaje' => Lang::get('casillero_in_use')
             ];
             break;
         default:
             $respuesta = [
                 'estado' => 'error',
-                'mensaje' => 'Error al intentar eliminar el casillero. Inténtalo nuevamente.'
+                'mensaje' => Lang::get('casillero_delete_error')
             ];
     }
 

@@ -2,13 +2,16 @@
 // Recibimos datos del paquete por GET
 $tracking   = $_GET['tracking'] ?? '';
 $cliente    = $_GET['cliente'] ?? '';
-$instrumento = $_GET['instrumento'] ?? ''; // ✅ corregido
+$instrumento = $_GET['instrumento'] ?? '';
 $categoria  = $_GET['categoria'] ?? '';
 $sucursal   = $_GET['sucursal'] ?? '';
 $courier    = $_GET['courier'] ?? '';
 $descripcion= $_GET['descripcion'] ?? '';
 $peso       = $_GET['peso'] ?? '';
 $qr         = $_GET['qr'] ?? '';
+
+// ✅ Timestamp para evitar caché
+$timestamp = $_GET['t'] ?? time();
 ?>
 
 <!DOCTYPE html>
@@ -17,19 +20,19 @@ $qr         = $_GET['qr'] ?? '';
     <meta charset="UTF-8">
     <title>Etiqueta Paquete <?= htmlspecialchars($tracking) ?></title>
     <style>
-
         @media print {
-  body {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    background-color: black !important;
-  }
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                background-color: black !important;
+            }
 
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-}
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+        
         @page {
             margin: 0;
             size: 4in 6in;
@@ -130,11 +133,10 @@ $qr         = $_GET['qr'] ?? '';
         }
     </style>
 </head>
-<body onload="window.print();">
+<body>
     <div class="label">
         <div class="header">
             <div class="logo">
-                <!-- Ajusta la ruta del logo -->
                 <img src="../../../assets/img/logo-rapi.ico" alt="RAPIEXPRESS Logo">
             </div>
         </div>
@@ -152,9 +154,9 @@ $qr         = $_GET['qr'] ?? '';
             <div class="field">
                 <div class="field-label">CONSIGNATAIRE:</div>
                 <div class="field-value"><?= htmlspecialchars($cliente) ?></div>
-
             </div>
-              <div class="field">               
+            
+            <div class="field">               
                 <div class="field-label">RECIBE:</div>
                 <div class="field-value"><?= htmlspecialchars($instrumento) ?></div>
             </div>
@@ -163,7 +165,7 @@ $qr         = $_GET['qr'] ?? '';
 
             <!-- Sección ubicación -->
             <div class="location-section">
-                <div class="location-title">LOCATIC GUAYAQUIL - ECUADOR</div>
+                <div class="location-title">LOCATION GUAYAQUIL - ECUADOR</div>
                 <div class="table-container">
                     <div class="table-header">
                         <div class="table-cell">TRACKING</div>
@@ -184,10 +186,10 @@ $qr         = $_GET['qr'] ?? '';
             <div class="field"><b>Courier:</b> <?= htmlspecialchars($courier) ?></div>
             <div class="field"><b>Descripción:</b> <?= htmlspecialchars($descripcion) ?></div>
 
-            <!-- QR dinámico -->
+            <!-- QR dinámico con anti-caché -->
             <div class="qr">
                 <?php if (!empty($qr)): ?>
-                    <img src="../../../src/storage/qr/<?= htmlspecialchars($qr) ?>" alt="QR Code">
+                    <img src="../../../src/storage/qr/<?= htmlspecialchars($qr) ?>?v=<?= $timestamp ?>" alt="QR Code">
                 <?php else: ?>
                     <p>[Sin QR]</p>
                 <?php endif; ?>

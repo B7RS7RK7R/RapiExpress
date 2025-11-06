@@ -5,8 +5,10 @@ use PDO;
 
 use PDOException;
 use RapiExpress\Config\Conexion;
+use RapiExpress\Interface;
+use RapiExpress\Interface\IDetalleSacaModel;
 
-class DetalleSaca extends Conexion {
+class DetalleSaca extends Conexion  implements IDetalleSacaModel{
 
 public function obtenerPorSaca(int $idSaca): array {
     try {
@@ -33,7 +35,7 @@ public function obtenerPorSaca(int $idSaca): array {
     }
 }
 
-public function agregarPaquete($idSaca, $idPaquete) {
+public function agregarPaquete($idSaca, $idPaquete): string {
     try {
         // Verificar si el paquete ya está asignado a una saca
         $stmtCheck = $this->db->prepare("SELECT * FROM detalle_sacas WHERE ID_Paquete = ?");

@@ -4,11 +4,12 @@ namespace RapiExpress\Models;
 use RapiExpress\Config\Conexion;
 use PDO;
 use PDOException;
+use RapiExpress\Interface\IPaqueteModel;
 
 // importar el helper global para generar QR
 require_once __DIR__ . '/../helpers/qr.php';
 
-class Paquete extends Conexion {
+class Paquete extends Conexion implements IPaqueteModel {
 
     /** ============================================================
      *  VALIDACIONES INTERNAS
@@ -99,65 +100,71 @@ class Paquete extends Conexion {
     }
 
     /** ============================================================
-     *  REGISTRAR PAQUETE
-     *  ============================================================ */
-    public function registrar($data)
-    {
-        try {
-            // 🔍 Validar datos
-            $errores = $this->validarDatos($data);
-            if (!empty($errores)) {
-                return ['success' => false, 'errores' => $errores];
-            }
-
-            // Generar tracking si no existe
-            if (empty($data['Tracking'])) {
-                $data['Tracking'] = $this->generarTracking();
-            }
-
-            // Obtener nombres relacionados
-            $cliente = $this->obtenerNombreCliente($data['ID_Cliente']);
-            $sucursal = $this->obtenerNombreSucursal($data['ID_Sucursal']);
-            $courier = $this->obtenerNombreCourier($data['ID_Courier']);
-
-            // Generar QR
-            $qrPath = generar_qr_code('paquete', [
-                'Tracking'     => $data['Tracking'],
-                'Cliente'      => $cliente,
-                'Instrumento'  => $data['Nombre_Instrumento'] ?? 'Sin instrumento',
-                'Peso'         => $data['Paquete_Peso'],
-                'Sucursal'     => $sucursal,
-                'Courier'      => $courier,
-                'Descripcion'  => $data['Prealerta_Descripcion'] ?? '',
-            ], __DIR__ . '/../storage/qr/');
-
-            // Insertar
-            $stmt = $this->db->prepare("
-                INSERT INTO paquetes
-                    (ID_Prealerta, ID_Usuario, ID_Cliente, Nombre_Instrumento, ID_Categoria, ID_Sucursal, Tracking, ID_Courier, Prealerta_Descripcion, Paquete_Peso, Estado, Qr_code)
-                VALUES
-                    (:prealerta, :usuario, :cliente, :instrumento, :categoria, :sucursal, :tracking, :courier, :descripcion, :peso, :estado, :qr)
-            ");
-            $stmt->execute([
-                ':prealerta'    => $data['ID_Prealerta'] ?? null,
-                ':usuario'      => $data['ID_Usuario'] ?? null,
-                ':cliente'      => $data['ID_Cliente'],
-                ':instrumento'  => $data['Nombre_Instrumento'] ?? null,
-                ':categoria'    => $data['ID_Categoria'],
-                ':sucursal'     => $data['ID_Sucursal'],
-                ':tracking'     => $data['Tracking'],
-                ':courier'      => $data['ID_Courier'],
-                ':descripcion'  => $data['Prealerta_Descripcion'],
-                ':peso'         => $data['Paquete_Peso'],
-                ':estado'       => $data['Estado'] ?? 'En tránsito',
-                ':qr'           => basename($qrPath)
-            ]);
-
-            return ['success' => true];
-        } catch (PDOException $e) {
-            return ['success' => false, 'errores' => ['Error BD: ' . $e->getMessage()]];
+ *  REGISTRAR PAQUETE (CON PIEZAS)
+ *  ============================================================ */
+public function registrar($data)
+{
+    try {
+        // 🔍 Validar datos
+        $errores = $this->validarDatos($data);
+        if (!empty($errores)) {
+            return ['success' => false, 'errores' => $errores];
         }
+
+        // Generar tracking si no existe
+        if (empty($data['Tracking'])) {
+            $data['Tracking'] = $this->generarTracking();
+        }
+
+        // Obtener nombres relacionados
+        $cliente = $this->obtenerNombreCliente($data['ID_Cliente']);
+        $sucursal = $this->obtenerNombreSucursal($data['ID_Sucursal']);
+        $courier = $this->obtenerNombreCourier($data['ID_Courier']);
+
+        // Generar QR
+        $qrPath = generar_qr_code('paquete', [
+            'Tracking'     => $data['Tracking'],
+            'Cliente'      => $cliente,
+            'Instrumento'  => $data['Nombre_Instrumento'] ?? 'Sin instrumento',
+            'Peso'         => $data['Paquete_Peso'],
+            'Piezas'       => $data['Paquete_Piezas'] ?? 1, // ✅ AGREGAR PIEZAS AL QR
+            'Sucursal'     => $sucursal,
+            'Courier'      => $courier,
+            'Descripcion'  => $data['Prealerta_Descripcion'] ?? '',
+        ], __DIR__ . '/../storage/qr/');
+
+        // Insertar
+        $stmt = $this->db->prepare("
+            INSERT INTO paquetes
+                (ID_Prealerta, ID_Usuario, ID_Cliente, Nombre_Instrumento, ID_Categoria, 
+                 ID_Sucursal, Tracking, ID_Courier, Prealerta_Descripcion, Paquete_Peso, 
+                 Paquete_Piezas, Estado, Qr_code)
+            VALUES
+                (:prealerta, :usuario, :cliente, :instrumento, :categoria, 
+                 :sucursal, :tracking, :courier, :descripcion, :peso, 
+                 :piezas, :estado, :qr)
+        ");
+        $stmt->execute([
+            ':prealerta'    => $data['ID_Prealerta'] ?? null,
+            ':usuario'      => $data['ID_Usuario'] ?? null,
+            ':cliente'      => $data['ID_Cliente'],
+            ':instrumento'  => $data['Nombre_Instrumento'] ?? null,
+            ':categoria'    => $data['ID_Categoria'],
+            ':sucursal'     => $data['ID_Sucursal'],
+            ':tracking'     => $data['Tracking'],
+            ':courier'      => $data['ID_Courier'],
+            ':descripcion'  => $data['Prealerta_Descripcion'],
+            ':peso'         => $data['Paquete_Peso'],
+            ':piezas'       => $data['Paquete_Piezas'] ?? 1, // ✅ INSERTAR PIEZAS
+            ':estado'       => $data['Estado'] ?? 'En tránsito',
+            ':qr'           => basename($qrPath)
+        ]);
+
+        return ['success' => true];
+    } catch (PDOException $e) {
+        return ['success' => false, 'errores' => ['Error BD: ' . $e->getMessage()]];
     }
+}
 
     /** ============================================================
      *  EDITAR PAQUETE

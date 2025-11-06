@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-10-2025 a las 23:29:11
+-- Tiempo de generación: 02-11-2025 a las 06:08:35
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -38,7 +38,8 @@ CREATE TABLE `cargos` (
 
 INSERT INTO `cargos` (`ID_Cargo`, `Cargo_Nombre`) VALUES
 (1, 'Administrador'),
-(2, 'Empleados');
+(56, 'klasñdfls'),
+(60, 'ssd');
 
 -- --------------------------------------------------------
 
@@ -57,7 +58,8 @@ CREATE TABLE `casilleros` (
 --
 
 INSERT INTO `casilleros` (`ID_Casillero`, `Casillero_Nombre`, `Direccion`) VALUES
-(36, '4533', 'sdfssd');
+(38, 'kkk', '76kkkkkM'),
+(53, '9990', 'jklkmll');
 
 -- --------------------------------------------------------
 
@@ -109,7 +111,10 @@ CREATE TABLE `clientes` (
 --
 
 INSERT INTO `clientes` (`ID_Cliente`, `Cedula_Identidad`, `Nombres_Cliente`, `Apellidos_Cliente`, `Direccion_Cliente`, `Telefono_Cliente`, `Correo_Cliente`, `Fecha_Registro`, `ID_Sucursal`, `ID_Casillero`, `Estado_Cliente`) VALUES
-(35, '11111111', 'Jean Carlos', 'Leal Guedez', 'Carrera 18\r\nSanta Eduvigis', '04268092177', 'jeancleal03022004@gmail.com', '2025-10-29 17:43:12', 65, 36, 'activo');
+(35, '11111111', 'Jean Carlos', 'Leal Guedez', 'Carrera 18\r\nSanta EduvigisL', '04268092179', 'jeancleal03022004@gmail.com', '2025-10-29 17:43:12', 65, 38, 'activo'),
+(37, '111111117', 'dsfdfsd', 'dsfdsf', 'KLDFLSDF', '37844434342', 'sdasds@GAMIL.COM', '2025-10-30 13:23:09', 65, 38, 'activo'),
+(44, '1111111144', 'sddfs', 'sdffs', 'sfdsfdsf', '34454534', 'dfsd@gamil.com', '2025-10-30 23:21:55', 81, 38, 'activo'),
+(46, '999999999', 'Pedro', 'Pedro', 'Carrera 18\r\nSanta Eduvigis', '0000000000', 'Pedro@gmail.com', '2025-10-31 12:00:42', 65, 38, 'activo');
 
 -- --------------------------------------------------------
 
@@ -132,7 +137,10 @@ CREATE TABLE `courier` (
 
 INSERT INTO `courier` (`ID_Courier`, `RIF_Courier`, `Courier_Nombre`, `Courier_Direccion`, `Courier_Telefono`, `Courier_Correo`) VALUES
 (8, 'J-00000000-0', 'Courierjdd', 'Couriers', '4444432', 'ZDFD@GMIAL.COM'),
-(11, 'J-00000020-0', 'Courier', 'Carrera 18', '435534534', 'jeancleal03022004@gmail.com');
+(11, 'J-00000020-0', 'Courier', 'Carrera 18', '435534534', 'jeancleal03022004@gmail.cos'),
+(15, 'J-00000800-0', 'CourierDDD', 'EWESD', '45678977', 'DSFASD@DSAD.CO'),
+(16, 'J-12345658-2', 'SDASDA', 'SDFSDFSF', '3423423', '343SDFDSF@GMAIL.COM'),
+(17, 'J-00000040-0', 'CourierE', 'EWESD', '444443233', 'ZDFSDS@GMIAL.COM');
 
 -- --------------------------------------------------------
 
@@ -146,6 +154,15 @@ CREATE TABLE `detalle_sacas` (
   `ID_Paquete` int(11) NOT NULL,
   `Fecha_Agregado` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `detalle_sacas`
+--
+
+INSERT INTO `detalle_sacas` (`ID_Detalle`, `ID_Saca`, `ID_Paquete`, `Fecha_Agregado`) VALUES
+(55, 53, 57, '2025-10-31 01:17:47'),
+(56, 56, 49, '2025-10-31 01:29:29'),
+(57, 56, 50, '2025-10-31 01:29:33');
 
 -- --------------------------------------------------------
 
@@ -165,7 +182,8 @@ CREATE TABLE `imagenes` (
 --
 
 INSERT INTO `imagenes` (`ID_Imagen`, `imagen_nombre_original`, `imagen_archivo`, `Fecha_Subida`) VALUES
-(14, 'img.jpg', 'perfil_20251029_102445_47394f820572aef9.jpg', '2025-10-29 05:24:45');
+(16, 'logo-rapi.png', 'perfil_20251031_034310_59c9ef2fd7a605f7.png', '2025-10-30 22:43:10'),
+(19, 'logo-rapi.png', 'perfil_20251031_171009_c17a3449c53ed53a.png', '2025-10-31 12:10:09');
 
 -- --------------------------------------------------------
 
@@ -180,6 +198,17 @@ CREATE TABLE `manifiestos` (
   `Ruta_PDF` varchar(255) NOT NULL,
   `Fecha_Creacion` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `manifiestos`
+--
+
+INSERT INTO `manifiestos` (`ID_Manifiesto`, `ID_Saca`, `ID_Usuario`, `Ruta_PDF`, `Fecha_Creacion`) VALUES
+(74, 34, 1, 'storage/manifiestos/Manifiesto_Saca_SACA-977A3F5C_20251030154953.pdf', '2025-10-30 10:49:53'),
+(75, 34, 1, 'storage/manifiestos/Manifiesto_Saca_SACA-977A3F5C_20251030185659.pdf', '2025-10-30 13:56:59'),
+(76, 53, 20, 'storage/manifiestos/Manifiesto_Saca_SACA-13A0B46A_20251031070141.pdf', '2025-10-31 02:01:42'),
+(77, 55, 20, 'storage/manifiestos/Manifiesto_Saca_SACA-079EA55C_20251031070154.pdf', '2025-10-31 02:01:54'),
+(78, 56, 20, 'storage/manifiestos/Manifiesto_Saca_SACA-9E56E5BF_20251031070201.pdf', '2025-10-31 02:02:01');
 
 -- --------------------------------------------------------
 
@@ -199,6 +228,7 @@ CREATE TABLE `paquetes` (
   `ID_Courier` int(11) DEFAULT NULL,
   `Prealerta_Descripcion` text DEFAULT NULL,
   `Paquete_Peso` decimal(10,2) DEFAULT 0.00,
+  `Paquete_Piezas` int(11) DEFAULT 1,
   `Qr_code` varchar(50) DEFAULT NULL,
   `Estado` enum('En tránsito','Entregado','Fallido') DEFAULT 'En tránsito',
   `ID_Saca` int(11) DEFAULT NULL
@@ -208,10 +238,13 @@ CREATE TABLE `paquetes` (
 -- Volcado de datos para la tabla `paquetes`
 --
 
-INSERT INTO `paquetes` (`ID_Paquete`, `ID_Prealerta`, `ID_Usuario`, `ID_Cliente`, `Nombre_Instrumento`, `ID_Categoria`, `ID_Sucursal`, `Tracking`, `ID_Courier`, `Prealerta_Descripcion`, `Paquete_Peso`, `Qr_code`, `Estado`, `ID_Saca`) VALUES
-(35, NULL, 1, 35, 'jsdf', 9, 65, 'PKG-14109', 8, 'asd', 784.00, 'PAQUETE-PKG-14109.png', 'En tránsito', NULL),
-(37, NULL, 1, 35, '55666', 9, 65, 'PKG-44194', 8, 'klzsd', 567.00, 'PAQUETE-PKG-44194.png', 'En tránsito', NULL),
-(38, NULL, 1, 35, 'jsdf', 9, 65, 'PKG-89838', 8, 'klzs', 56768.00, 'PAQUETE-PKG-89838.png', 'En tránsito', NULL);
+INSERT INTO `paquetes` (`ID_Paquete`, `ID_Prealerta`, `ID_Usuario`, `ID_Cliente`, `Nombre_Instrumento`, `ID_Categoria`, `ID_Sucursal`, `Tracking`, `ID_Courier`, `Prealerta_Descripcion`, `Paquete_Peso`, `Paquete_Piezas`, `Qr_code`, `Estado`, `ID_Saca`) VALUES
+(48, NULL, 1, 37, '55666', 6, 65, 'PKG-88461', 11, 'dsf', 4.00, 1, 'PAQUETE-PKG-88461-20251030_201858.png', 'Entregado', NULL),
+(49, NULL, 1, 35, 'jsdf', 9, 65, 'PKG-89706', 11, 'L', 8.00, 1, 'PAQUETE-PKG-89706.png', 'En tránsito', 56),
+(50, NULL, 1, 37, 'K', 9, 65, 'PKG-06171', 11, 'K', 4.00, 3, 'PAQUETE-PKG-06171.png', 'En tránsito', 56),
+(51, NULL, 1, 37, 'D', 9, 65, 'PKG-44394', 8, 'D', 8.00, 6, 'PAQUETE-PKG-44394.png', 'En tránsito', NULL),
+(57, NULL, 1, 44, 'jsdf', 6, 81, 'PKG-87250', 17, 'ksddas', 6678.00, 1, 'PAQUETE-PKG-87250.png', 'En tránsito', 53),
+(60, NULL, 20, 46, 'soda', 6, 81, 'PKG-53282', 11, 'soda', 34.00, 63, 'PAQUETE-PKG-53282.png', 'En tránsito', NULL);
 
 --
 -- Disparadores `paquetes`
@@ -252,7 +285,7 @@ CREATE TABLE `prealertas` (
 --
 
 INSERT INTO `prealertas` (`ID_Prealerta`, `ID_Cliente`, `ID_Tienda`, `ID_Usuario`, `ID_Casillero`, `ID_Sucursal`, `Tracking_Tienda`, `Prealerta_Piezas`, `Prealerta_Peso`, `Prealerta_Descripcion`, `Estado`) VALUES
-(70, 35, 13, 1, 36, 65, 'bsd44kk', 67, 89.00, 'klsad', 'Prealerta');
+(83, 35, 18, 20, 38, 81, 'skdf', 3, 45.00, 'a[sd', 'Prealerta');
 
 -- --------------------------------------------------------
 
@@ -268,8 +301,19 @@ CREATE TABLE `sacas` (
   `ID_Sucursal` int(11) DEFAULT NULL,
   `Estado` enum('Pendiente','En tránsito','Entregada') DEFAULT 'Pendiente',
   `Peso_Total` decimal(10,2) DEFAULT 0.00,
-  `Qr_Code` varchar(100) DEFAULT NULL
+  `Qr_code` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `sacas`
+--
+
+INSERT INTO `sacas` (`ID_Saca`, `Codigo_Saca`, `Fecha_Creacion`, `ID_Usuario`, `ID_Sucursal`, `Estado`, `Peso_Total`, `Qr_code`) VALUES
+(53, 'SACA-13A0B46A', '2025-10-31 01:17:15', 20, 81, 'En tránsito', 6678.00, NULL),
+(55, 'SACA-079EA55C', '2025-10-31 01:27:15', 20, 65, 'Pendiente', 0.00, NULL),
+(56, 'SACA-9E56E5BF', '2025-10-31 01:29:11', 20, 65, 'Pendiente', 12.00, 'SACA-SACA-9E56E5BF.png'),
+(57, 'SACA-4096CDCA', '2025-10-31 01:49:42', 20, 65, 'Pendiente', 0.00, 'SACA-SACA-4096CDCA.png'),
+(58, 'SACA-7F86BD6F', '2025-10-31 01:52:19', 20, 81, 'En tránsito', 0.00, NULL);
 
 -- --------------------------------------------------------
 
@@ -305,8 +349,11 @@ CREATE TABLE `sucursales` (
 --
 
 INSERT INTO `sucursales` (`ID_Sucursal`, `RIF_Sucursal`, `Sucursal_Nombre`, `Sucursal_Direccion`, `Sucursal_Telefono`, `Sucursal_Correo`) VALUES
-(63, 'J-12345678-8', 'Sucursal Central', 'Guayaquil', '04246567895', 'central@empresa.com'),
-(65, 'J-12347678-3', 'Sucursaentral', 'Guayaquil', '04142345673', 'central@presa.com');
+(63, 'J-12345678-8', 'Sucursal Central', 'GuayaquilLS', '04246567895', 'central@empresa.com'),
+(65, 'J-12347678-3', 'Sucursaentral', 'Guayaquil', '04142345673', 'central@presa.com'),
+(66, 'J-12345678-3', 'Sucursal SSSSCentral', 'Guayaquil', '042646567895', 'ceSntral@empresa.DD'),
+(67, 'J-12335678-3', 'Jean Carlos Leal Gue', 'Carrera 18', '042680921773', 'jeancleal03022004@gmail.comKDDDDD'),
+(81, 'J-12445678-3', 'DFSFD', 'DFSFFDS', '34554545', 'SDFSDFD@gmail.ds');
 
 -- --------------------------------------------------------
 
@@ -329,9 +376,8 @@ CREATE TABLE `tiendas` (
 INSERT INTO `tiendas` (`ID_Tienda`, `Tienda_Nombre`, `Tienda_Direccion`, `Tienda_Telefono`, `Tienda_Correo`) VALUES
 (1, 'Tienda', 'Av Comercio 100', '0412112222', 'tiendaA@mail.com'),
 (2, 'Tienda B', 'Av Comercio 200', '0412-3334444', 'tiendaB@mail.com'),
-(5, 'ssss', 'Mi casa', '04339417443', 'support@LLmazon.com'),
-(13, 'S', 'Mi DcasaD', '04339417442', 'supSDport@LLmazon.com'),
-(15, 'ssssd', 'Mi dd', '04339447443', 'support@LLmazon.co');
+(5, 'ssss', 'Mi casa', '043394174433', 'support@LLmazon.coms'),
+(18, 'ssssS', 'ASDAS', '434433333', 'supportE@LLmazon.Dcomd');
 
 -- --------------------------------------------------------
 
@@ -360,10 +406,9 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`ID_Usuario`, `Cedula_Identidad`, `Nombres_Usuario`, `Apellidos_Usuario`, `Username`, `Password`, `Telefono_Usuario`, `Correo_Usuario`, `Direccion_Usuario`, `Fecha_Registro`, `ID_Imagen`, `ID_Cargo`, `ID_Sucursal`) VALUES
-(1, '11111111', 'JEAL', 'LEAL', 'admin', '$2y$10$qlSzyXyEg4LjxpE97xkNb.OetvVKJis2Bxj6JvuocqUNDzS77m/3O', '0414558557', 'admin@mail.com', 'ddyu', '2025-08-27 13:16:47', 14, 1, 63),
-(17, '474556668', 'Jean Carlos', 'Leal Guedez', 'admin6', '$2y$10$LfQCDDweQW4dhdClCHJAlu3O6hY.hExSEMl.OCC8S0k0UcdJ0izD2', '0426809279', 'jeancleal0322004@gmail.com', 'Carrera 18', '2025-10-27 17:53:27', NULL, 2, NULL),
-(18, '445566687', 'Jeanarlos', 'Lealz', 'admin68', '$2y$10$FzhVvz6A8dMhz7aLD2e1XemXbrEJaAzGW4Z76KhR0PfZq0hdpqPFy', '04268092177', 'jeancleal0302004@gmail.com', 'Carrera 18', '2025-10-27 17:55:45', NULL, 2, NULL),
-(19, '111111115', 'JeanCarlos', 'Leal', 'emple', '$2y$10$o1yzniNLdh5gIIrojN.QsOXJeBOHZdx2wzOSJdGVygsL2qQhRwsUi', '0426708177', 'jeanclea022004@gmail.com', 'Carrera 18', '2025-10-28 00:21:02', NULL, 2, 65);
+(1, '11111111', 'JEAL', 'LEAL', 'admin', '$2y$10$biifrQh4ZmTtDjG9.Z2ouuAGyTMBhU2SIDnlfJxttAmeiEzhFZK.2', '0414558557', 'admin@mail.com', 'ddyuL', '2025-08-27 13:16:47', 16, 1, 63),
+(20, '0000000000', 'Kelvy Jose', 'De Narvaez', 'Kelvys', '$2y$10$5X2Qbed/FPW5DEO1WG6Nh.aRSi9iNJSIzB40A62YSZTA1ZsIzVQ2S', '0323232323233', 'KelvyyWill@gmail.com', 'Tukolsdg', '2025-10-30 18:38:51', 19, 56, 67),
+(22, '999999944', 'sdfd', 'sdf', 'dsfdf', '$2y$10$tqvy/A5UwQC5OiB3VK.Z0e5n4lEuBzeejzqiFBaAwTeAWP/G77yeC', '04268442177', 'sdfd422@fds.fs', 'Carrera 18df', '2025-10-31 00:57:55', NULL, 1, 81);
 
 --
 -- Índices para tablas volcadas
@@ -506,67 +551,67 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `cargos`
 --
 ALTER TABLE `cargos`
-  MODIFY `ID_Cargo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `ID_Cargo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT de la tabla `casilleros`
 --
 ALTER TABLE `casilleros`
-  MODIFY `ID_Casillero` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `ID_Casillero` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `ID_Categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `ID_Categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `ID_Cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `ID_Cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de la tabla `courier`
 --
 ALTER TABLE `courier`
-  MODIFY `ID_Courier` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `ID_Courier` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_sacas`
 --
 ALTER TABLE `detalle_sacas`
-  MODIFY `ID_Detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `ID_Detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT de la tabla `imagenes`
 --
 ALTER TABLE `imagenes`
-  MODIFY `ID_Imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `ID_Imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `manifiestos`
 --
 ALTER TABLE `manifiestos`
-  MODIFY `ID_Manifiesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+  MODIFY `ID_Manifiesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- AUTO_INCREMENT de la tabla `paquetes`
 --
 ALTER TABLE `paquetes`
-  MODIFY `ID_Paquete` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `ID_Paquete` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT de la tabla `prealertas`
 --
 ALTER TABLE `prealertas`
-  MODIFY `ID_Prealerta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `ID_Prealerta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- AUTO_INCREMENT de la tabla `sacas`
 --
 ALTER TABLE `sacas`
-  MODIFY `ID_Saca` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `ID_Saca` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT de la tabla `seguimientos`
@@ -578,19 +623,19 @@ ALTER TABLE `seguimientos`
 -- AUTO_INCREMENT de la tabla `sucursales`
 --
 ALTER TABLE `sucursales`
-  MODIFY `ID_Sucursal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `ID_Sucursal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
 
 --
 -- AUTO_INCREMENT de la tabla `tiendas`
 --
 ALTER TABLE `tiendas`
-  MODIFY `ID_Tienda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `ID_Tienda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `ID_Usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `ID_Usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Restricciones para tablas volcadas
