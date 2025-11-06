@@ -859,3 +859,222 @@ $('#form-eliminar-prealerta').on('submit', function (e) {
 function setDeletePrealertaId(id) {
   $('#delete_prealerta_id').val(id);
 }
+
+// ─── SACA ──────────────────────────────────────────────────────────────
+function recargarTablaSaca() {
+  recargarTablaGenerica('#tablaSacas', 'index.php?c=saca&a=index', 'edit-saca-modal');
+  $('input[name="selectSaca"]').prop('checked', false);
+  $('#btnDetalle').prop('disabled', true);
+  const btnImprimir = document.getElementById("btnImprimirSaca");
+  if (btnImprimir) btnImprimir.disabled = true;
+  inicializarRadiosSaca();
+}
+
+$('#formRegistrarSaca, form[action*="saca&a=registrar"]').on('submit', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+  const datos = new FormData(this);
+
+  $.ajax({
+    url: 'index.php?c=saca&a=registrar',
+    type: 'POST',
+    data: datos,
+    contentType: false,
+    processData: false,
+    dataType: 'json',
+    success: function (res) {
+      $('#sacaModal').modal('hide');
+      setTimeout(() => {
+        if (res.success) {
+          limpiarFormulario($form);
+          Swal.fire({ icon: 'success', title: 'Éxito', text: res.message, timer: 2000, showConfirmButton: false });
+          recargarTablaSaca();
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: res.message });
+        }
+      }, 300);
+    },
+    error: function (xhr) {
+      let mensaje = 'No se pudo registrar la saca.';
+      if (xhr.responseJSON?.message) mensaje = xhr.responseJSON.message;
+      Swal.fire({ icon: 'error', title: 'Error', text: mensaje });
+    }
+  });
+});
+
+let datosOriginalesSaca = {};
+
+$(document).on('show.bs.modal', '.modal[id^="edit-saca-modal-"]', function () {
+  const $form = $(this).find('form');
+  datosOriginalesSaca = {};
+  $form.find('input, select, textarea').each(function () {
+    const name = $(this).attr('name');
+    if (name) datosOriginalesSaca[name] = $(this).val();
+  });
+});
+
+$(document).on('submit', 'form[action*="saca&a=editar"]', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+
+  let hayCambios = false;
+  $form.find('input, select, textarea').each(function () {
+    const name = $(this).attr('name');
+    if (name && datosOriginalesSaca[name] !== $(this).val()) {
+      hayCambios = true;
+      return false;
+    }
+  });
+
+  if (!hayCambios) {
+    Swal.fire({ icon: 'info', title: 'Sin cambios', text: 'No se detectaron modificaciones en los datos.', timer: 2000, showConfirmButton: false });
+    return;
+  }
+
+  const datos = new FormData(this);
+  $.ajax({
+    url: 'index.php?c=saca&a=editar',
+    type: 'POST',
+    data: datos,
+    contentType: false,
+    processData: false,
+    dataType: 'json',
+    success: function (res) {
+      $form.closest('.modal').modal('hide');
+      setTimeout(() => {
+        if (res.success) {
+          Swal.fire({ icon: 'success', title: 'Actualizado', text: res.message, timer: 1500, showConfirmButton: false });
+          recargarTablaSaca();
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: res.message });
+        }
+      }, 300);
+    },
+    error: function (xhr) {
+      let mensaje = 'No se pudo actualizar la saca.';
+      if (xhr.responseJSON?.message) mensaje = xhr.responseJSON.message;
+      Swal.fire({ icon: 'error', title: 'Error', text: mensaje });
+    }
+  });
+});
+
+$(document).on('submit', 'form[action*="saca&a=eliminar"]', function (e) {
+  e.preventDefault();
+  const $form = $(this);
+
+  Swal.fire({
+    title: '¿Está seguro?',
+    text: "¿Desea eliminar esta saca?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: 'index.php?c=saca&a=eliminar',
+        type: 'POST',
+        data: $form.serialize(),
+        dataType: 'json',
+        success: function (res) {
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Eliminado', text: res.message, timer: 1500, showConfirmButton: false });
+            recargarTablaSaca();
+          } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: res.message });
+          }
+        },
+        error: function (xhr) {
+          let mensaje = 'No se puede eliminar la saca porque está relacionada con otros registros.';
+          if (xhr.responseJSON?.message) mensaje = xhr.responseJSON.message;
+          Swal.fire({ icon: 'error', title: 'Error', text: mensaje });
+        }
+      });
+    }
+  });
+});
+
+function inicializarRadiosSaca() {
+  const radios = document.querySelectorAll('input[name="selectSaca"]');
+  const btnImprimir = document.getElementById("btnImprimirSaca");
+  const btnDetalle = document.getElementById("btnDetalle");
+
+  radios.forEach(radio => {
+    const newRadio = radio.cloneNode(true);
+    radio.parentNode.replaceChild(newRadio, radio);
+  });
+
+  document.querySelectorAll('input[name="selectSaca"]').forEach(radio => {
+    radio.addEventListener("change", function () {
+      const selected = document.querySelector('input[name="selectSaca"]:checked');
+      if (btnImprimir) btnImprimir.disabled = !selected;
+      if (btnDetalle) btnDetalle.disabled = !selected;
+    });
+  });
+
+  if (btnImprimir) btnImprimir.disabled = !document.querySelector('input[name="selectSaca"]:checked');
+  if (btnDetalle) btnDetalle.disabled = !document.querySelector('input[name="selectSaca"]:checked');
+}
+
+function abrirModalImprimirSaca() {
+  const selected = document.querySelector('input[name="selectSaca"]:checked');
+  if (!selected) {
+    Swal.fire({ icon: 'warning', title: 'Atención', text: 'Debe seleccionar una saca.', timer: 2000, showConfirmButton: false });
+    return;
+  }
+
+  const idSaca = selected.value;
+  const timestamp = new Date().getTime();
+  const qrUrl = `index.php?c=saca&a=generarQR&id=${idSaca}&t=${timestamp}`;
+  const qrContainer = document.getElementById("detalleSacaQR");
+
+  Swal.fire({
+    title: 'Cargando...',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
+
+  $.ajax({
+    url: `index.php?c=saca&a=obtenerDatosImpresion&id=${idSaca}`,
+    type: 'GET',
+    dataType: 'json',
+    success: function (res) {
+      Swal.close();
+      if (res.success) {
+        const data = res.data;
+        document.getElementById("detalleSacaCodigo").innerText = data.Codigo_Saca || '-';
+        document.getElementById("detalleSacaUsuario").innerText = data.Usuario || '-';
+        document.getElementById("detalleSacaSucursal").innerText = data.Sucursal || '-';
+        document.getElementById("detalleSacaEstado").innerText = data.Estado || '-';
+        document.getElementById("detalleSacaPeso").innerText = data.Peso_Total || '-';
+        document.getElementById("detalleSacaCantidad").innerText = data.Cantidad_Paquetes || '0';
+        document.getElementById("detalleSacaFecha").innerText = data.Fecha_Creacion || '-';
+
+        qrContainer.innerHTML = `<img src="${qrUrl}" width="120" alt="Código QR" onerror="this.parentElement.innerHTML='<p class=\\'text-muted\\'>Error al cargar QR</p>'">`;
+
+        $('#imprimirSacaModal').modal('show');
+      } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: res.message });
+      }
+    },
+    error: function (xhr) {
+      Swal.close();
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los datos de la saca.' });
+    }
+  });
+}
+
+$(document).on('click', '#btnImprimirSaca', abrirModalImprimirSaca);
+
+$(document).on('hidden.bs.modal', '#imprimirSacaModal', function () {
+  document.getElementById("detalleSacaCodigo").innerText = '-';
+  document.getElementById("detalleSacaUsuario").innerText = '-';
+  document.getElementById("detalleSacaSucursal").innerText = '-';
+  document.getElementById("detalleSacaEstado").innerText = '-';
+  document.getElementById("detalleSacaPeso").innerText = '-';
+  document.getElementById("detalleSacaCantidad").innerText = '-';
+  document.getElementById("detalleSacaFecha").innerText = '-';
+  document.getElementById("detalleSacaQR").innerHTML = '';
+});
